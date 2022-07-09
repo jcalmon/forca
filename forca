@@ -1,0 +1,366 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
+
+//OPÇÃO 1 - CADASTRO DE PALAVRAS
+
+void cadastro_palavra(){
+	//declaração das variaveis
+	FILE *arquivodef;
+	FILE *arquivo;
+	char def[200];
+	char definicao[200];
+	char *simb;
+	char plvra[100];
+	char str1[100];
+	int sinal = 1;
+	system("clear");
+
+
+	
+	printf("Digite a palavra: ");
+	scanf("%s", plvra);
+
+	//abertura do arquivo 
+	arquivo = fopen("list_palavras.txt", "r");
+	fscanf(arquivo, "%s", str1);
+	simb = strtok(str1, ":");// le string até o ":"
+
+	
+	// logica que percorre todo o arquio para verificar se a palavra ja esta no dicionario de palavras.
+	while(simb != NULL){ 
+		if (strcmp(simb,plvra) == 0){
+			printf("Palavra já cadastrada");
+			sinal = 0;
+			break;
+		}
+		else{
+		simb = strtok(NULL,":");
+		}
+	}
+
+	// se não estiver no dicionario
+	if(sinal == 1){
+	//Abre o aquivo txt das palavras e cadastra
+	arquivo = fopen("list_palavras.txt", "a");
+	strcat(plvra,":" );// concatena as strings "palavra" + ":"
+	fputs(plvra, arquivo);
+	fclose(arquivo);
+
+	printf("Digite a definicao: ");
+	scanf("%s", def);//pega primeira palavra da string 
+	fgets(definicao,200,stdin);// pega o resto da string sem a primeira palavra
+	
+//Abre o aquivo txt da definição das palavras e cadastra o texto
+	arquivodef = fopen("list_definicao.txt", "a");
+	strcat(def,definicao);// concatena as 2 strings para formar a string completa da definição
+	strcat(plvra,def);//concatena as strings "palavra:" + "definição"
+	fputs(plvra, arquivodef);
+	fclose(arquivodef);
+
+	}
+}
+
+//OPÇÃO 2 - CONSULTA
+
+void consulta(){
+	FILE *arq;
+	char *simb2;
+	char palavra[200];
+	char ch[100];
+	char copia[100];
+	int sig=0;
+
+	printf("Buscar definição da palavra: ");
+	scanf("%s", palavra);
+	
+	arq = fopen("list_definicao.txt", "r");
+
+	//logica que percorre o arquivo inteiro linha por linha
+	while((ch[0] = fgetc(arq))!= EOF){
+		fgets(ch+1, 200 ,arq);
+		strcpy(copia, ch);//copia a string inteira da linha 
+		
+		simb2 = strtok( ch, ":");// le a string até o ":"
+		
+		//logica o arquivo pegando somente as stings até os :
+		while(simb2 != NULL){
+			
+			// compara a string ate os: com a palavra digitada
+			if (strcmp(simb2,palavra)==0){
+				sig=1;
+				printf("%s", copia);//printa a copia feita da string inteira na linha da palavra igual a digitada
+				break;
+
+			}
+			simb2 = strtok(NULL,":");
+			
+			}
+		}
+	//se não for encontrada no dicionario de palavra + definiçao
+	if(sig==0){
+	printf("Essa palavra não foi cadastrada!");
+		
+	}
+	fclose(arq);
+}
+
+// Funcao para contagem de linhas do arquivo de palavra+ definição
+int contagem_linhas(void){
+	FILE *arq;
+	char texto[200];
+	int count = 0;
+		
+	arq = fopen("list_definicao.txt", "r");
+	while((fgets(texto,200,arq))!=NULL){
+		count++;
+		}
+	fclose(arq);
+	return count;
+	}
+
+
+
+//OPÇÃO 3 - jOGO DA FORCA
+
+//Estrutura da forca
+void imagem( int etapa){
+	system("clear");
+	if (etapa == 0){
+		printf("\nx==:==     ");
+		printf("\nx  :       ");
+		printf("\nx          ");
+		printf("\nx	         ");
+		printf("\nx	         ");
+		printf("\nx	         ");
+		printf("\n===========");
+	}
+
+	if (etapa == 1){
+		system("clear");
+		printf("\nx==:==     ");
+		printf("\nx  :       ");
+		printf("\nx  0       ");
+		printf("\nx	         ");
+		printf("\nx	         ");
+		printf("\nx	         ");
+		printf("\n===========");
+	}
+	
+	if (etapa == 2){
+		system("clear");
+		printf("\nx==:==     ");
+		printf("\nx  :       ");
+		printf("\nx  0       ");
+		printf("\nx  |       ");
+		printf("\nx	         ");
+		printf("\nx	         ");
+		printf("\n===========");
+	}
+
+	if (etapa == 3){
+		system("clear");
+		printf("\nx==:==     ");
+		printf("\nx  :       ");
+		printf("\nx  0       ");
+		printf("\nx \\|       ");
+		printf("\nx	         ");
+		printf("\nx	         ");
+		printf("\n===========");
+	}
+	
+	if (etapa == 4){
+		system("clear");
+		printf("\nx==:==     ");
+		printf("\nx  :       ");
+		printf("\nx  0       ");
+		printf("\nx \\|/       ");
+		printf("\nx	         ");
+		printf("\nx	         ");
+		printf("\n===========");
+	}
+
+	if (etapa == 5){
+		system("clear");
+		printf("\nx==:==     ");
+		printf("\nx  :       ");
+		printf("\nx  0       ");
+		printf("\nx \\|/       ");
+		printf("\nx /         ");
+		printf("\nx	         ");
+		printf("\n===========");
+	}
+
+	if (etapa == 6){
+		system("clear");
+		printf("\nx==:==     ");
+		printf("\nx  :       ");
+		printf("\nx  0       ");
+		printf("\nx \\|/       ");
+		printf("\nx / \\         ");
+		printf("\nx	         ");
+		printf("\n===========");
+		printf("\nENFORCADO!");
+		
+	}
+	
+	
+}
+
+void forca() {
+	int count = 0;
+	char *palavra[200];
+	char plvra[200];
+  char palavra_copy[200];
+	char letra;
+	char lista[50]="";
+
+	FILE *arq;
+	char texto[200];
+	int count2 =0;
+	int valor, limite;
+	
+	limite = contagem_linhas();//conta as linhas 
+	srand(time(NULL));
+	valor = 1 + rand() %limite;//pega um numero aleatorio com o limite de numero de linhas do arquivo
+	
+	arq = fopen("list_definicao.txt", "r");//leitura do arquivo
+
+	//logica para percorrer o arquivo até a linha = ao numero aleatorio gerado
+	while((fgets(texto,200,arq))!=NULL){
+		count2++;
+		if(count2 == valor){
+			break;
+		}
+	
+	}
+
+	*palavra = strtok( texto, ":");// le string até os :
+	
+	// copia a palavra digitada em variaveis auxiliares
+	strcpy(palavra_copy, *palavra);
+	strcpy(plvra, *palavra);
+	
+
+	//tranforma cada caracter da palavra em ponto para mascarar a palavra
+ 	for (int i = 0; i < strlen(palavra_copy); i++) {
+   palavra_copy[i] = '.';
+ 	}
+
+	while(1){
+		int errou = 1;
+		int flag = 1;
+		imagem(count);// função estrutura da forca
+
+		//No sexto erro, o jogo acaba e é mostrada a palavra
+		if (count == 6){
+			printf("\nA palavra é: %s\n", *palavra);
+			break;
+		}
+
+		//completando todas as letras da palavra, você ganha.
+		if (strcmp(plvra, palavra_copy) == 0){
+			printf("\n%s", palavra_copy);
+			printf("\nParabens você ganhou!\n");
+	
+			break;
+		}
+		
+		printf("\n%s", palavra_copy);//mostra a palavra mascarada ou meio mascarada
+
+		printf("\nLetras ja digitadas: %s\n", lista);//printa as letras digitadas
+		
+		printf("\nDigite uma letra: ");
+		scanf(" %c", &letra);	
+		
+
+		//logica que verifica se a letra digitada ja esta na lista de letras digitadas  
+		for (int i=0; i < strlen(lista);i++){
+			if(letra == lista[i]){
+				printf("\nVocê já digitou essa letra!");
+				flag = 0;
+				errou = 0;
+				
+				break;
+				
+			}
+		}
+
+		//se a letra ainda não foi digitada, ela é colocada dentro da lista de letras
+		if(flag == 1){
+			lista[strlen(lista)] = letra;
+			lista[strlen(lista)] = ' ';
+			
+		}
+		//logica que verifica se a letra petence a palavra digitada, se pertencer, a letra é colocada no lugar do .(mascara)
+		
+		for (int i=0; i<strlen(palavra_copy); i++){
+			if(letra == plvra[i]){
+				palavra_copy[i] = letra;
+				errou = 0;
+			} 
+		}
+
+		//se não pertencer, acrescenta um erro, o numero de erros é representado por cada etapa da estrutura da forca
+		if(errou==1){
+			count++;
+		}
+
+		
+	}
+	fclose(arq);
+}
+
+int main(void){
+
+	int opcao;
+	FILE *arquivo;
+	FILE *arquivodef;
+
+	//cria arquivo para iniciar o jogo
+	arquivo = fopen("list_palavras.txt", "a");
+	fclose(arquivo);
+
+	//cria arquivo para iniciar o jogo
+	arquivodef = fopen("list_definicao.txt", "a");
+	fclose(arquivodef);
+
+
+	while(1){
+
+		//MENU
+		printf("\nMENU\n");
+		printf("1- Cadastrar palavra\n");
+		printf("2- Consultar palavra\n");
+		printf("3- Jogo da Forca\n");
+		printf("Digite uma opção: ");
+		scanf("%i", &opcao);
+
+		//opção 1 - cadastra
+		if (opcao == 1){
+			
+			system("clear");//limpa a tela
+			cadastro_palavra();
+			
+		}
+		//opção 2 - consulta
+		if (opcao == 2){
+			
+			system("clear");//limpa a tela
+			consulta();
+			
+		}
+		//opção 3 - joga forca
+		if (opcao == 3){
+			
+			system("clear");//limpa a tela
+			forca();
+			
+		}
+	}
+	
+	return 0;
+	
+}
